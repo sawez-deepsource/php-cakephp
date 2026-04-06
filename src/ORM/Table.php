@@ -2399,7 +2399,6 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
 
         if ($this->_transactionCommitted($options['atomic'], $options['_primary'])) {
             foreach ($entities as $entity) {
-                $this->dispatchEvent('Model.afterSaveCommit', compact('entity', 'options'));
                 if ($options['atomic'] || $options['_primary']) {
                     $cleanupOnSuccess($entity);
                 }
@@ -2542,14 +2541,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
             return null;
         }, $options['atomic']);
 
-        if ($failed === null && $this->_transactionCommitted($options['atomic'], $options['_primary'])) {
-            foreach ($entities as $entity) {
-                $this->dispatchEvent('Model.afterDeleteCommit', [
-                    'entity' => $entity,
-                    'options' => $options,
-                ]);
-            }
-        }
+        // afterDeleteCommit is dispatched by individual _processDelete() calls via onCommit()
 
         return $failed;
     }
