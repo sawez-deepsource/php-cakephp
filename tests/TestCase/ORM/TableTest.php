@@ -2478,15 +2478,6 @@ class TableTest extends TestCase
         $this->connection->commit();
     }
 
-    /**
-     * Asserts afterSaveCommit is deferred and fires after the outer transaction commits.
-     *
-     * Currently, afterSaveCommit is permanently suppressed when save() is called inside
-     * Connection::transactional(). The event never fires — not during the save (correct,
-     * since the transaction is still open) and not after the outer commit (the bug).
-     *
-     * This test documents the expected behavior: the event should fire after commit.
-     */
     public function testAfterSaveCommitFiringAfterOuterTransactionCommits(): void
     {
         $table = $this->getTableLocator()->get('users');
@@ -2519,13 +2510,6 @@ class TableTest extends TestCase
         $this->assertTrue($calledAfterCommit, 'afterSaveCommit should fire after the outer transaction commits');
     }
 
-    /**
-     * Asserts afterSaveCommit fires for each table when multiple tables are saved
-     * inside a single Connection::transactional() block.
-     *
-     * This is the cross-table atomicity pattern: wrapping saves to multiple tables
-     * in one transaction. Currently, all afterSaveCommit events are permanently lost.
-     */
     public function testAfterSaveCommitForCrossTableTransactional(): void
     {
         $usersTable = $this->getTableLocator()->get('users');
@@ -2561,12 +2545,6 @@ class TableTest extends TestCase
         $this->assertTrue($articleEventFired, 'afterSaveCommit should fire for articles table after outer commit');
     }
 
-    /**
-     * Asserts afterDeleteCommit fires after an outer transaction commits.
-     *
-     * Same suppression problem as afterSaveCommit: when delete() is called inside
-     * Connection::transactional(), afterDeleteCommit is permanently lost.
-     */
     public function testAfterDeleteCommitFiringAfterOuterTransactionCommits(): void
     {
         $table = $this->getTableLocator()->get('users');
@@ -2586,9 +2564,6 @@ class TableTest extends TestCase
         $this->assertTrue($called, 'afterDeleteCommit should fire after the outer transaction commits');
     }
 
-    /**
-     * Asserts afterSaveCommit events are discarded when the outer transaction rolls back.
-     */
     public function testAfterSaveCommitNotFiredOnRollback(): void
     {
         $table = $this->getTableLocator()->get('users');
