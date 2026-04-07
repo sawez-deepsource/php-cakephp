@@ -1652,7 +1652,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
         if ($entity && $this->_transactionCommitted($options['atomic'], true)) {
             $this->dispatchEvent('Model.afterSaveCommit', compact('entity', 'options'));
         } elseif ($entity && $this->getConnection()->inTransaction()) {
-            $this->getConnection()->onCommit(
+            $this->getConnection()->afterCommit(
                 fn() => $this->dispatchEvent('Model.afterSaveCommit', ['entity' => $entity, 'options' => $options]),
             );
         }
@@ -1973,7 +1973,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
             if ($this->_transactionCommitted($options['atomic'], $options['_primary'])) {
                 $this->dispatchEvent('Model.afterSaveCommit', compact('entity', 'options'));
             } elseif ($this->getConnection()->inTransaction()) {
-                $this->getConnection()->onCommit(
+                $this->getConnection()->afterCommit(
                     fn() => $this->dispatchEvent('Model.afterSaveCommit', ['entity' => $entity, 'options' => $options]),
                 );
             }
@@ -2457,7 +2457,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
                 'options' => $options,
             ]);
         } elseif ($success && $this->getConnection()->inTransaction()) {
-            $this->getConnection()->onCommit(
+            $this->getConnection()->afterCommit(
                 fn() => $this->dispatchEvent('Model.afterDeleteCommit', [
                     'entity' => $entity,
                     'options' => $options,
@@ -2550,7 +2550,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
             }
         } elseif ($failed === null && $this->getConnection()->inTransaction()) {
             foreach ($entities as $entity) {
-                $this->getConnection()->onCommit(
+                $this->getConnection()->afterCommit(
                     fn() => $this->dispatchEvent('Model.afterDeleteCommit', [
                         'entity' => $entity,
                         'options' => $options,
