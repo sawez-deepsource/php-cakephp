@@ -1653,7 +1653,10 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
             $this->dispatchEvent('Model.afterSaveCommit', compact('entity', 'options'));
         } elseif ($entity && $this->getConnection()->inTransaction()) {
             $this->getConnection()->afterCommit(
-                fn() => $this->dispatchEvent('Model.afterSaveCommit', ['entity' => $entity, 'options' => $options]),
+                fn() => $this->dispatchEvent('Model.afterSaveCommit', [
+                    'entity' => $entity,
+                    'options' => $options,
+                ]),
             );
         }
 
@@ -1974,7 +1977,10 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
                 $this->dispatchEvent('Model.afterSaveCommit', compact('entity', 'options'));
             } elseif ($this->getConnection()->inTransaction()) {
                 $this->getConnection()->afterCommit(
-                    fn() => $this->dispatchEvent('Model.afterSaveCommit', ['entity' => $entity, 'options' => $options]),
+                    fn() => $this->dispatchEvent('Model.afterSaveCommit', [
+                        'entity' => $entity,
+                        'options' => $options,
+                    ]),
                 );
             }
             if ($options['atomic'] || $options['_primary']) {
